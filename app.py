@@ -80,9 +80,9 @@ def video_info():
         "skip_download": True,
         "http_headers": {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"},
     }
-    # Only use iOS player client on cloud servers to bypass bot detection
+    # Use web_creator player client on cloud to bypass bot detection (returns standard formats)
     if IS_CLOUD:
-        ydl_opts["extractor_args"] = {"youtube": {"player_client": ["ios", "mweb"]}}
+        ydl_opts["extractor_args"] = {"youtube": {"player_client": ["web_creator", "mweb"]}}
     # Use uploaded cookies file if available, else browser cookies if toggled
     if COOKIES_FILE.exists():
         ydl_opts["cookiefile"] = str(COOKIES_FILE)
@@ -236,24 +236,24 @@ def start_download():
     def do_download():
         task = download_tasks[task_id]
         try:
-            # Build format selection — broad fallbacks for iOS/mweb player clients
+            # Build format selection — broad fallbacks for cloud compatibility
             if quality == "audio":
                 format_sel = "bestaudio[ext=m4a]/bestaudio/best"
                 merge_ext = "m4a"
             elif quality == "best":
-                format_sel = "bestvideo+bestaudio/best"
+                format_sel = "bestvideo*+bestaudio/bestvideo+bestaudio/best"
                 merge_ext = "mp4"
             elif quality == "720":
-                format_sel = "bestvideo[height<=720]+bestaudio/best[height<=720]/best"
+                format_sel = "bestvideo*[height<=720]+bestaudio/bestvideo[height<=720]+bestaudio/best[height<=720]/best"
                 merge_ext = "mp4"
             elif quality == "480":
-                format_sel = "bestvideo[height<=480]+bestaudio/best[height<=480]/best"
+                format_sel = "bestvideo*[height<=480]+bestaudio/bestvideo[height<=480]+bestaudio/best[height<=480]/best"
                 merge_ext = "mp4"
             elif quality == "360":
-                format_sel = "bestvideo[height<=360]+bestaudio/best[height<=360]/best"
+                format_sel = "bestvideo*[height<=360]+bestaudio/bestvideo[height<=360]+bestaudio/best[height<=360]/best"
                 merge_ext = "mp4"
             else:
-                format_sel = "bestvideo+bestaudio/best"
+                format_sel = "bestvideo*+bestaudio/bestvideo+bestaudio/best"
                 merge_ext = "mp4"
 
             ydl_opts = {
@@ -266,9 +266,9 @@ def start_download():
                 "noprogress": False,
                 "http_headers": {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"},
             }
-            # Only use iOS player client on cloud servers to bypass bot detection
+            # Use web_creator player client on cloud to bypass bot detection
             if IS_CLOUD:
-                ydl_opts["extractor_args"] = {"youtube": {"player_client": ["ios", "mweb"]}}
+                ydl_opts["extractor_args"] = {"youtube": {"player_client": ["web_creator", "mweb"]}}
             # Use uploaded cookies file if available, else browser cookies if toggled
             if COOKIES_FILE.exists():
                 ydl_opts["cookiefile"] = str(COOKIES_FILE)
