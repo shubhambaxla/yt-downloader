@@ -5,7 +5,6 @@ Uses yt-dlp for downloading and Flask for the backend with SSE progress streamin
 
 import os
 import json
-import platform
 import re
 import threading
 import time
@@ -15,6 +14,8 @@ from pathlib import Path
 from flask import Flask, render_template, request, jsonify, Response, send_file
 from flask_cors import CORS
 import yt_dlp
+
+IS_CLOUD = platform.system() == "Linux"
 
 IS_CLOUD = platform.system() == "Linux"
 
@@ -82,9 +83,6 @@ def video_info():
         "format": "all",  # Prevent format filtering errors during info extraction
         "http_headers": {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"},
     }
-
-    if IS_CLOUD:
-        ydl_opts["extractor_args"] = {"youtube": {"player_client": ["ios", "mweb"]}}
 
     # Use uploaded cookies file if available, else browser cookies if toggled
     if COOKIES_FILE.exists():
@@ -269,9 +267,6 @@ def start_download():
                 "noprogress": False,
                 "http_headers": {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"},
             }
-
-            if IS_CLOUD:
-                ydl_opts["extractor_args"] = {"youtube": {"player_client": ["ios", "mweb"]}}
 
             # Use uploaded cookies file if available, else browser cookies if toggled
             if COOKIES_FILE.exists():
