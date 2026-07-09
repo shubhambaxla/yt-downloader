@@ -15,9 +15,6 @@ from flask import Flask, render_template, request, jsonify, Response, send_file
 from flask_cors import CORS
 import yt_dlp
 
-IS_CLOUD = platform.system() == "Linux"
-
-IS_CLOUD = platform.system() == "Linux"
 
 
 app = Flask(__name__)
