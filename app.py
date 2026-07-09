@@ -93,6 +93,9 @@ def video_info():
 
         # Build format list — deduplicated, only meaningful ones
         formats_raw = info.get("formats", [])
+        if not formats_raw:
+            return jsonify({"error": "No formats found. YouTube is blocking this server or the video is unavailable."}), 400
+
         seen = set()
         format_list = []
 
