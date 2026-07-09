@@ -231,24 +231,24 @@ def start_download():
     def do_download():
         task = download_tasks[task_id]
         try:
-            # Build format selection
+            # Build format selection — broad fallbacks for iOS/mweb player clients
             if quality == "audio":
                 format_sel = "bestaudio[ext=m4a]/bestaudio/best"
                 merge_ext = "m4a"
             elif quality == "best":
-                format_sel = "bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo+bestaudio/best"
+                format_sel = "bestvideo+bestaudio/best"
                 merge_ext = "mp4"
             elif quality == "720":
-                format_sel = "bestvideo[height<=720][ext=mp4]+bestaudio[ext=m4a]/bestvideo[height<=720]+bestaudio/best[height<=720]/best"
+                format_sel = "bestvideo[height<=720]+bestaudio/best[height<=720]/best"
                 merge_ext = "mp4"
             elif quality == "480":
-                format_sel = "bestvideo[height<=480][ext=mp4]+bestaudio[ext=m4a]/bestvideo[height<=480]+bestaudio/best[height<=480]/best"
+                format_sel = "bestvideo[height<=480]+bestaudio/best[height<=480]/best"
                 merge_ext = "mp4"
             elif quality == "360":
-                format_sel = "bestvideo[height<=360][ext=mp4]+bestaudio[ext=m4a]/bestvideo[height<=360]+bestaudio/best[height<=360]/best"
+                format_sel = "bestvideo[height<=360]+bestaudio/best[height<=360]/best"
                 merge_ext = "mp4"
             else:
-                format_sel = "bestvideo[ext=mp4]+bestaudio[ext=m4a]/best"
+                format_sel = "bestvideo+bestaudio/best"
                 merge_ext = "mp4"
 
             ydl_opts = {
