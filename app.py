@@ -5,7 +5,7 @@ Uses yt-dlp for downloading and Flask for the backend with SSE progress streamin
 
 import os
 import json
-import platform
+
 import re
 import threading
 import time
@@ -16,7 +16,6 @@ from flask import Flask, render_template, request, jsonify, Response, send_file
 from flask_cors import CORS
 import yt_dlp
 
-IS_CLOUD = platform.system() == "Linux"  # True on deployed Docker, False on local Windows
 
 app = Flask(__name__)
 CORS(app)
@@ -80,9 +79,7 @@ def video_info():
         "skip_download": True,
         "http_headers": {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"},
     }
-    # Use web_creator player client on cloud to bypass bot detection (returns standard formats)
-    if IS_CLOUD:
-        ydl_opts["extractor_args"] = {"youtube": {"player_client": ["web_creator", "mweb"]}}
+
     # Use uploaded cookies file if available, else browser cookies if toggled
     if COOKIES_FILE.exists():
         ydl_opts["cookiefile"] = str(COOKIES_FILE)
@@ -266,9 +263,7 @@ def start_download():
                 "noprogress": False,
                 "http_headers": {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"},
             }
-            # Use web_creator player client on cloud to bypass bot detection
-            if IS_CLOUD:
-                ydl_opts["extractor_args"] = {"youtube": {"player_client": ["web_creator", "mweb"]}}
+
             # Use uploaded cookies file if available, else browser cookies if toggled
             if COOKIES_FILE.exists():
                 ydl_opts["cookiefile"] = str(COOKIES_FILE)
