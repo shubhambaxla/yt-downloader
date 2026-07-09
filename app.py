@@ -26,6 +26,8 @@ if os.path.isdir(FFMPEG_DIR):
 DOWNLOAD_DIR = Path(__file__).parent / "downloads"
 DOWNLOAD_DIR.mkdir(exist_ok=True)
 
+COOKIES_FILE = Path(__file__).parent / "cookies.txt"
+
 # In-memory store for download progress
 download_tasks = {}
 
@@ -40,6 +42,24 @@ def sanitize_filename(name: str) -> str:
 @app.route("/")
 def index():
     return render_template("index.html")
+
+
+@app.route("/api/cookies", methods=["POST"])
+def upload_cookies():
+    """Upload a cookies.txt file for YouTube authentication."""
+    if "file" not in request.files:
+        return jsonify({"error": "No file uploaded"}), 400
+    f = request.files["file"]
+    if not f.filename:
+        return jsonify({"error": "Empty filename"}), 400
+    f.save(str(COOKIES_FILE))
+    return jsonify({"success": True, "message": "Cookies uploaded successfully"})
+
+
+@app.route("/api/cookies", methods=["GET"])
+def cookies_status():
+    """Check if a cookies file exists."""
+    return jsonify({"hasCookies": COOKIES_FILE.exists()})
 
 
 @app.route("/api/info", methods=["POST"])
@@ -58,7 +78,10 @@ def video_info():
         "extractor_args": {"youtube": {"player_client": ["ios", "mweb"]}},
         "http_headers": {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"},
     }
-    if use_cookies:
+    # Use uploaded cookies file if available, else browser cookies if toggled
+    if COOKIES_FILE.exists():
+        ydl_opts["cookiefile"] = str(COOKIES_FILE)
+    elif use_cookies:
         ydl_opts["cookiesfrombrowser"] = ("chrome",)
 
     try:
@@ -239,7 +262,10 @@ def start_download():
                 "extractor_args": {"youtube": {"player_client": ["ios", "mweb"]}},
                 "http_headers": {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"},
             }
-            if use_cookies:
+            # Use uploaded cookies file if available, else browser cookies if toggled
+            if COOKIES_FILE.exists():
+                ydl_opts["cookiefile"] = str(COOKIES_FILE)
+            elif use_cookies:
                 ydl_opts["cookiesfrombrowser"] = ("chrome",)
 
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
