@@ -79,6 +79,7 @@ def video_info():
         "skip_download": True,
         "format": "all",  # Prevent format filtering errors during info extraction
         "http_headers": {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"},
+        "extractor_args": {"youtube": {"player_client": ["tv", "web"]}}
     }
 
     # Use uploaded cookies file if available, else browser cookies if toggled
@@ -266,6 +267,7 @@ def start_download():
                 "no_warnings": True,
                 "noprogress": False,
                 "http_headers": {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"},
+                "extractor_args": {"youtube": {"player_client": ["tv", "web"]}}
             }
 
             # Use uploaded cookies file if available, else browser cookies if toggled
